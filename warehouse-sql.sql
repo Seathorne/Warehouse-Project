@@ -65,9 +65,9 @@ SELECT
     w.warehouse_name,
     SUM(i.quantity * p.unit_price) AS total_inventory_value,
     COUNT(DISTINCT p.product_id) AS unique_products
-FROM Inventory i
-JOIN Warehouses w ON i.warehouse_id = w.warehouse_id
-JOIN Products p ON i.product_id = p.product_id
+FROM Inventory AS i
+JOIN Warehouses AS w ON i.warehouse_id = w.warehouse_id
+JOIN Products AS p ON i.product_id = p.product_id
 GROUP BY w.warehouse_name;
 
 -- 3. Complex JOIN with WHERE clause
