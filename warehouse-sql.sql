@@ -53,18 +53,18 @@ SELECT
     p.product_name,
     i.quantity,
     p.unit_price,
-    (i.quantity * p.unit_price) as total_value
-FROM Inventory i
-JOIN Warehouses w ON i.warehouse_id = w.warehouse_id
-JOIN Products p ON i.product_id = p.product_id
+    (i.quantity * p.unit_price) AS total_value
+FROM Inventory AS i
+JOIN Warehouses AS w ON i.warehouse_id = w.warehouse_id
+JOIN Products AS p ON i.product_id = p.product_id
 ORDER BY w.warehouse_name, p.product_name;
 
 -- 2. Aggregation with GROUP BY
 -- Total value of inventory by warehouse
 SELECT 
     w.warehouse_name,
-    SUM(i.quantity * p.unit_price) as total_inventory_value,
-    COUNT(DISTINCT p.product_id) as unique_products
+    SUM(i.quantity * p.unit_price) AS total_inventory_value,
+    COUNT(DISTINCT p.product_id) AS unique_products
 FROM Inventory i
 JOIN Warehouses w ON i.warehouse_id = w.warehouse_id
 JOIN Products p ON i.product_id = p.product_id
@@ -73,16 +73,16 @@ GROUP BY w.warehouse_name;
 -- 3. Complex JOIN with WHERE clause
 -- Find warehouses with robotics products above average quantity
 WITH avg_quantity AS (
-    SELECT AVG(quantity) as avg_qty FROM Inventory
+    SELECT AVG(quantity) AS avg_qty FROM Inventory
 )
 SELECT 
     w.warehouse_name,
     p.product_name,
     i.quantity,
     avg_q.avg_qty as overall_avg_quantity
-FROM Inventory i
-JOIN Warehouses w ON i.warehouse_id = w.warehouse_id
-JOIN Products p ON i.product_id = p.product_id
-CROSS JOIN avg_quantity avg_q
+FROM Inventory AS i
+JOIN Warehouses AS w ON i.warehouse_id = w.warehouse_id
+JOIN Products AS p ON i.product_id = p.product_id
+CROSS JOIN avg_quantity AS avg_q
 WHERE p.category = 'Robotics'
 AND i.quantity > avg_q.avg_qty;
