@@ -70,19 +70,28 @@ JOIN Warehouses AS w ON i.warehouse_id = w.warehouse_id
 JOIN Products AS p ON i.product_id = p.product_id
 GROUP BY w.warehouse_name;
 
--- 3. Complex JOIN with WHERE clause
--- Find warehouses with robotics products above average quantity
-WITH avg_quantity AS (
-    SELECT AVG(quantity) AS avg_qty FROM Inventory
-)
+-- 3. Complex Query with Subqueries
+-- Find warehouses with robotics products below average quantity
 SELECT 
     w.warehouse_name,
     p.product_name,
     i.quantity,
-    avg_q.avg_qty as overall_avg_quantity
+    (SELECT AVG(quantity) FROM Inventory) AS overall_avg_quantity
 FROM Inventory AS i
 JOIN Warehouses AS w ON i.warehouse_id = w.warehouse_id
 JOIN Products AS p ON i.product_id = p.product_id
-CROSS JOIN avg_quantity AS avg_q
 WHERE p.category = 'Robotics'
-AND i.quantity > avg_q.avg_qty;
+AND i.quantity < (SELECT AVG(quantity) FROM Inventory);
+
+-- Debug Queries
+-- Check robotics products
+SELECT * FROM Products WHERE category = 'Robotics';
+
+-- Check average quantity
+SELECT AVG(quantity) FROM Inventory;
+
+-- Check quantities for robotics products
+SELECT i.quantity, p.category
+FROM Inventory AS i
+JOIN Products AS p ON i.product_id = p.product_id
+WHERE p.category = 'Robotics';
