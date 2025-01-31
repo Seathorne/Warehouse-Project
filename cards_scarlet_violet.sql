@@ -91,3 +91,23 @@ WHERE NOT EXISTS (
     SELECT 1 FROM Cards C
     WHERE C.set_id = N.set_id AND C.set_no = N.set_no
 );
+
+----------------------------------------------------------------------------
+/*  5. Delete all but the oldest (lowest value card_id) Porygon card.    */
+----------------------------------------------------------------------------
+-- Select the oldest Porygon card:
+SELECT *
+FROM Cards C
+WHERE C.card_id = (
+   SELECT MIN(card_id) FROM Cards
+                       WHERE poke_id = 137
+)
+AND poke_id = 137;
+
+-- Delete all but the oldest Porygon card:
+DELETE FROM Cards
+WHERE card_id > (
+   SELECT MIN(card_id) FROM Cards
+                       WHERE poke_id = 137
+)
+AND poke_id = 137;
