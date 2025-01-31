@@ -1,13 +1,16 @@
--- 1. Basic selection. Show all Pokémon.
+---------------------------------------------------
+/*  1. Basic selection. Show all Pokémon.   */
+---------------------------------------------------
 SELECT * FROM Pokemon;
 
--- 2. Modify column type; add default value & non-null constraint.
----------------------------------------------------------------------
--- *** (MODIFY COLUMN is only supported in MySQL & MariaDB.
--- ***   Or use ALTER COLUMN with PostgreSQL, SQL Server, Oracle, etc.
--- ***   This command requires table recreation in SQLite.)
+-------------------------------------------------------------------------
+/* 2. Modify column type; add default value & non-null constraint.  */
+-------------------------------------------------------------------------
+-- **** (MODIFY COLUMN is only supported in MySQL & MariaDB.
+-- ****  Or use ALTER COLUMN with PostgreSQL, SQL Server, Oracle, etc.
+-- **** This command requires table recreation in SQLite.)
 
-/* (Only supported in MySQL & MariaDB.)
+/* (This command is only supported in MySQL & MariaDB.)
 ALTER TABLE Pokémon
 MODIFY COLUMN type VARCHAR(10) NOT NULL DEFAULT '';
  */
@@ -34,15 +37,16 @@ DROP TABLE Pokemon;
 ALTER TABLE Pokemon_new
 RENAME TO Pokemon;
 
------------------------------------------------------
------------------------------------------------------
-
--- 3. Update table to convert null values to empty string.
+-------------------------------------------------------------------
+/*  3. Update table to convert null values to empty string.  */
+-------------------------------------------------------------------
 UPDATE Pokemon
 SET poke_type = ''
 WHERE poke_type IS NULL;
 
--- 4. Query Pokémon based on Pokédex # range.
+-----------------------------------------------------
+/*  4. Query Pokémon based on Pokédex # range.  */
+-----------------------------------------------------
 SELECT *
     FROM Pokemon
 WHERE poke_id = 103 OR poke_name = 'Scizor'
@@ -52,9 +56,7 @@ WHERE poke_id = 103 OR poke_name = 'Scizor'
    OR poke_id > 800;
 
 -----------------------------------------------------
------------------------------------------------------
-
-/*   5. Update any Gen 1 Pokémon.    */
+/*  5. Update any Gen 1 Pokémon.        */
 -----------------------------------------------------
 --   view Exeggutor in table
 SELECT *
@@ -74,9 +76,8 @@ UPDATE Pokemon
 SET poke_type = 'Grass'
 WHERE poke_name = 'Exeggutor'
 AND poke_type IS NULL OR poke_type = '';
------------------------------------------------------
------------------------------------------------------
 
+-----------------------------------------------------
 /*   6. Add some post-Gen 1 Pokémon.    */
 -----------------------------------------------------
 --  Select all Pokémon from Gen 2–4:
@@ -121,8 +122,7 @@ SET poke_id = 423
 WHERE poke_id = 422;
 
 -----------------------------------------------------
+/*  X. Add new Scarlet & Violet cards to deck.  */
 -----------------------------------------------------
-
--- X. Add new Scarlet & Violet cards to deck.
 -- INSERT INTO Cards
 -- VALUES ();
