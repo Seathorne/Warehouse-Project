@@ -40,3 +40,54 @@ FROM Cards C
 LEFT JOIN Pokemon P ON C.poke_id = P.poke_id
 WHERE C.card_name = 'Porygon'
    OR C.poke_id = 137;
+
+-- Delete custom card.
+DELETE FROM Cards
+WHERE card_id = 7101
+  AND card_name = 'Porygon''s Dream';
+
+-------------------------------------------------------
+/*  3. Insert more unique cards of similar Pokemon. */
+-------------------------------------------------------
+INSERT INTO Cards (card_id, card_name, poke_id, set_id, set_no, illustrator, rarity_class, rarity_count)
+SELECT 65, 'Porygon', 137, 1, 65, 'Tomoaki Imakuni', 'Black Star', 0
+WHERE NOT EXISTS (
+    SELECT 1 FROM Cards WHERE set_id = 1 AND set_no = 65
+);
+
+INSERT INTO Cards (card_id, card_name, poke_id, set_id, set_no, illustrator, rarity_class, rarity_count)
+SELECT 74101, 'Porygon', 137, 3, 28, 'Ken Sugimori', 'Common', 3
+WHERE NOT EXISTS (
+    SELECT 1 FROM Cards WHERE set_id = 3 AND set_no = 28
+);
+
+INSERT INTO Cards (card_id, card_name, poke_id, set_id, set_no, illustrator, rarity_class, rarity_count)
+SELECT 82050, 'Porygon', 137, 7, 39, 'Kagemaru Himeno', 'Common', 3
+WHERE NOT EXISTS (
+    SELECT 1 FROM Cards WHERE set_id = 7 AND set_no = 39
+);
+
+INSERT INTO Cards (card_id, card_name, poke_id, set_id, set_no, illustrator, rarity_class, rarity_count)
+SELECT 95033, 'Porygon', 137, 11, 48, 'Hironobu Yoshida', 'Common', 3
+WHERE NOT EXISTS (
+    SELECT 1 FROM Cards WHERE set_id = 11 AND set_no = 48
+);
+
+-----------------------------------------------
+/*  4. Attempt bulk insert operation.   */
+-----------------------------------------------
+WITH New_Cards(card_id, card_name, poke_id, set_id, set_no, illustrator, rarity_class, rarity_count) AS (
+    SELECT 65, 'Porygon', 137, 1, 65, 'Tomoaki Imakuni', 'Black Star', 0
+    UNION ALL
+    SELECT 74101, 'Porygon', 137, 3, 28, 'Ken Sugimori', 'Common', 3
+    UNION ALL
+    SELECT 82050, 'Porygon', 137, 7, 39, 'Kagemaru Himeno', 'Common', 3
+    UNION ALL
+    SELECT 95033, 'Porygon', 137, 11, 48, 'Hironobu Yoshida', 'Common', 3
+)
+INSERT INTO Cards
+SELECT * FROM New_Cards N
+WHERE NOT EXISTS (
+    SELECT 1 FROM Cards C
+    WHERE C.set_id = N.set_id AND C.set_no = N.set_no
+);
