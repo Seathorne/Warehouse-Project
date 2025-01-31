@@ -122,6 +122,32 @@ SET poke_id = 423
 WHERE poke_id = 422;
 
 -----------------------------------------------------
+/*  7. Add Pokémon up through Scarlet & Violet  */
+-----------------------------------------------------
+--  Select all Pokémon from Gen 5 onwards:
+SELECT *
+FROM Pokemon
+WHERE poke_id >= 494;
+
+--  Delete all Pokémon from Gen 5 onwards:
+DELETE FROM Pokemon
+WHERE poke_id >= 494;
+
+--  Insert new Pokémon if Gen 5+ has not already been updated:
+WITH gen_5_plus AS (
+    SELECT 1 FROM Pokemon
+             WHERE poke_id >= 494 -- check if any from after Gen 4
+)
+INSERT INTO Pokemon (poke_id, poke_name, poke_type, poke_desc, height, weight, style_text)
+SELECT * FROM (
+   VALUES
+       (606, 'Beheeyem', 'Psychic', 'Cerebral Pokémon', 39, 76.1, 'It uses psychic power to control an opponent''s brain and tamper with its memories.'),
+       (634, 'Zweilous', 'Dark/Dragon', 'Hostile Pokémon', 55, 110.2, 'The two heads do not get along. Whichever head eats more than the other gets to be the leader.'),
+       (886, 'Drakloak', 'Dragon/Ghost', 'Caretaker Pokémon', 16, 8.8, 'This Pokémon flies around at over 120 miles per hour. If a Drakloak is defeated in a battle, its Dreepy will wander off without a second thought.')
+) AS new_values
+WHERE NOT EXISTS (SELECT 1 FROM gen_5_plus);
+
+-----------------------------------------------------
 /*  X. Add new Scarlet & Violet cards to deck.  */
 -----------------------------------------------------
 -- INSERT INTO Cards
