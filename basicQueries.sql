@@ -120,6 +120,26 @@ FROM gen1Pokemon
 WHERE Type IN ('Grass','Poison') AND
       Type2 IN ('Grass','Poison');
 
+-- Find all non-poison types:
+SELECT Id, Name, Type
+FROM gen1Pokemon
+WHERE Type NOT IN ('Poison');
+
+-- Find all Pokémon whose name has a 'p':
+SELECT Name,Number
+FROM gen1Pokemon
+WHERE Name LIKE '%p%';
+
+-- Find all Pokémon that end in 'e' lol
+SELECT Number, Name
+FROM gen1Pokemon
+WHERE Name LIKE '%e';
+
+-- Find all Pokémon whose 2nd letter is 'p':
+SELECT Name
+FROM gen1Pokemon
+WHERE Name LIKE '_p%';
+
 ------------------------------------------------------------------------------------------
 /* > copy and drop table if necessary   */
 CREATE TABLE gen1Pokemon2
