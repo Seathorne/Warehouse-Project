@@ -63,7 +63,7 @@ SELECT *
 FROM gen1Pokemon
 WHERE Name LIKE ' % ';
 
--- Clean up leading/trailing spaces:
+/***  --  Clean up leading/trailing spaces:  ***/
 UPDATE gen1Pokemon
 SET Name = TRIM(Name)
 WHERE Name != TRIM(Name);
