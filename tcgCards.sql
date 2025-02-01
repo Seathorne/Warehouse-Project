@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS tcgCards (
   Illustrator TEXT(20), -- e.g. 'Ken Sugimori', 'AYUMI ODASHIMI'
   CardType TEXT(10), -- e.g. 'Pokemon', 'Trainer';
   CardSubType TEXT(20), -- e.g. 'EX', 'Supporter', 'Item', 'Lv. X' ;
-  CardSet TEXT(20), -- e.g. 'Base Set', 'Jungle', 'Surging Sparks';
+  SetName TEXT(20), -- e.g. 'Base Set', 'Jungle', 'Surging Sparks';
   SetId TEXT(5), -- e.g. 'PAF', 'TEF', 'BW2', 'SSP' only;
   SetNumber INTEGER, -- e.g. 171 (/191 --> JOIN with tcgSets.);
   RaritySymbol TEXT(20), -- e.g. 'Black Star', 'Diamond', 'Circle';
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS tcgCards (
 );
 
 -- Verify table exists (empty):
-SELECT CardId,Name,CardSet,SetId,SetNumber,RaritySymbol
+SELECT CardId,Name,SetName,SetId,SetNumber,RaritySymbol
 FROM tcgCards;
 
 -- Add column for language,:
@@ -154,5 +154,84 @@ WHERE EXISTS (
              AND C.Illustrator = 'AYUMI ODASHIMI'
 );
 
---.* Next step: update CardHolo boolean and RaritySymbol using CASE.
---.* Finally, update SetName and CardEffect.
+----------------------------------------------------------------]
+
+--.* Next step: update CardHolo boolean using CASE.
+UPDATE tcgCards
+SET CardHolo = (
+  CASE
+    WHEN Rarity LIKE '%Rare%' THEN 1
+    WHEN Rarity LIKE '%Holo%' THEN 1
+    WHEN RaritySymbol = 'Star'
+      OR RaritySymbol = 'Black Star' THEN 1
+    ELSE FALSE
+  END
+)
+WHERE CardHolo IS NULL OR CardHolo IS FALSE;
+
+-- Check CardHolo and Rarity of all cards:
+SELECT SetNumber, Name, CardHolo, Rarity, RaritySymbol
+FROM tcgCards;
+
+-- Clear out CardHolo column to reset:
+UPDATE tcgCards
+SET CardHolo = NULL
+WHERE CardId = 1
+   OR CardId = 2
+   OR CardId = 3;
+
+----------------------------------------------------------------]
+
+--.* Next, update SetName and CardEffect.
+UPDATE tcgCards
+SET SetName = 'Surging Sparks'
+WHERE SetId = 'SSP'
+  AND SetNumber <= 191
+  AND (SetName = '' OR SetName IS NULL);
+
+-- Check set names and card text:
+SELECT CardId, Name, Illustrator, SetName, CardEffect
+FROM tcgCards;
+
+-- Find any cards with set name "Surging Sparks"
+   /*  (only finds 2 since 1 was purposely elided)  */
+SELECT * FROM tcgCards
+WHERE SetName = 'Surging Sparks';
+
+-- Find any including slightly misspelled card set names:
+SELECT * -- e.g. WHERE SetName = 'Surge Spark' or 'Surging Sparks'
+FROM tcgCards WHERE SetName LIKE 'Surg%Sp%'
+
+-- Find only slightly misspelled card set names:
+SELECT * -- e.g. WHERE SetName = 'Surge Spark' instead of 'Surging Sparks'
+FROM tcgCards WHERE SetName LIKE 'Surg%Sp%'
+                AND SetName != 'Surging Sparks';
+
+-- Use above selection as CTE to update cards:
+WITH misspelledCards (Name, CardSubType, SetName) AS (
+  SELECT Name,CardSubType,SetName
+    FROM tcgCards WHERE SetName LIKE 'Surg%Sp%'
+    AND SetName != 'Surging Sparks' -- e.g. SetName = 'Surge Spark'
+)
+
+SELECT * FROM misspelledCards;
+
+-- Finally, fix spelling on cards.
+WITH misspelledCards (Name, CardSubType, SetName, SetId) AS (
+  SELECT Name,CardSubType,SetName,SetId
+    FROM tcgCards WHERE SetName LIKE 'Surg%Sp%'
+    AND SetName != 'Surging Sparks' -- e.g. SetName = 'Surge Spark'
+)
+/* Update SetName WHERE SetName is LIKE "Surg%Sp%"  */
+UPDATE tcgCards
+SET SetName = 'Surging Sparks'
+WHERE SetId = 'SSP';
+
+-- ( Change back to 'Surgin'' Sparks' to reset ;)
+UPDATE tcgCards
+SET SetName = 'Surgin'' Sparks'
+WHERE Name LIKE '%Lisia%';
+
+----------------------------------------------------------------------------------------]
+
+--.* For the last step, update RaritySymbol based on Rarity text (e.g. circle, star).
