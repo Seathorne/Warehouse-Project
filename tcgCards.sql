@@ -77,7 +77,7 @@ WHERE SetId = 'SSP' AND SetNumber = 179;
 /* Must recreate table or modify manually. */
 
 -- Add more cards with multiples VALUES:
-/* Missing: Illustrator, CardHolo bool, CardId, SetName, rarity symbol, card effect text.  */
+/* Missing: CardId(*), Illustrator, CardHolo bool, SetName, RaritySymbol, CardEffect text.  */
 INSERT INTO tcgCards (Name, CardType, CardSubType, SetId, SetNumber, Rarity)
 VALUES ('Dragon Elixir', 'TRAINER', 'Item', 'SSP', 172, 'Common'),
        ('Deduction Kit', 'TRAINER', 'Item', 'SSP', 171, 'Common');
@@ -88,3 +88,69 @@ FROM tcgCards
 WHERE SetId = 'SSP';
 
 -----------------------------------------------------------------------
+/*  2. Update missing values from 2 newly added cards.  */
+-----------------------------------------------------------------------
+-- Update Illustrator for both added cards.
+
+-- Select both cards needing updates...
+SELECT *
+FROM tcgCards
+WHERE Name = 'Dragon Elixir' AND SetNumber = 172
+   OR Name = 'Deduction Kit' AND SetNumber = 171;
+
+-- Create a CTE for the two-card set.
+WITH twoCards (Name, SetNumber, Illustrator) AS (
+  SELECT Name, SetNumber, Illustrator
+    FROM tcgCards
+    WHERE Name = 'Dragon Elixir' AND SetNumber = 172
+       OR Name = 'Deduction Kit' AND SetNumber = 171
+  ) -- and...
+
+SELECT * FROM twoCards;
+
+-- Now change the query to SELECT those only where Illustrator is NULL:
+WITH twoCards (Name, SetNumber, Illustrator) AS (
+  SELECT Name, SetNumber, Illustrator
+    FROM tcgCards
+    WHERE Name = 'Dragon Elixir' AND SetNumber = 172
+       OR Name = 'Deduction Kit' AND SetNumber = 171
+  ) -- and...
+
+SELECT * FROM twoCards -- Add a condition here:
+WHERE twoCards.Illustrator IS NULL;
+  /* Verify with this condition instead:  */
+-- WHERE twoCards.Illustrator IS NOT NULL;
+
+-- Finally, update the values.
+WITH twoCards (Name, SetNumber, Illustrator) AS (
+  SELECT Name, SetNumber, Illustrator
+    FROM tcgCards
+    WHERE Name = 'Dragon Elixir' AND SetNumber = 172
+       OR Name = 'Deduction Kit' AND SetNumber = 171
+  ) -- and...
+
+UPDATE tcgCards
+SET Illustrator = 'AYUMI ODASHIMI'
+WHERE EXISTS ( -- Join tcgCards & twoCards on identifiers
+  SELECT 1 FROM twoCards
+           WHERE Name = tcgCards.Name
+             AND SetNumber = tcgCards.SetNumber
+             /* condition only when Illustrator null, */
+           AND twoCards.Illustrator IS NULL
+);
+
+-- Verify Illustrator was updated:
+WITH updatedCards (Name, Illustrator) AS (
+  SELECT Name, Illustrator
+    FROM tcgCards
+    WHERE Name = 'Dragon Elixir' AND ILLUSTRATOR LIKE 'AYUMI%'
+       OR Name = 'Deduction Kit' AND ILLUSTRATOR LIKE 'AYUMI%'
+  )
+
+SELECT * FROM tcgCards C
+WHERE EXISTS (
+  SELECT 1 FROM updatedCards U
+           WHERE U.Name = C.Name
+             AND U.Illustrator = C.Illustrator
+             AND C.Illustrator = 'AYUMI ODASHIMI'
+);
