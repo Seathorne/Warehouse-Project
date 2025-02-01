@@ -249,9 +249,121 @@ AND EXISTS ( -- and Pokémon exists in Pokédex
   WHERE (Pokemon.poke_id = newCards.poke_id)
 );
 
+-- Show all new cards:
 SELECT set_id, set_no, card_name, rarity_class
 FROM Cards
 WHERE set_id IN ('SPE', 'OBF', 'TEF', 'SSP', 'PAF');
+
+-- Find cards where Pokémon needs to be added:
+WITH newCards (poke_id, card_name, set_id, set_no, poke_type, poke_hp, illustrator, rarity_class)  AS (
+  SELECT 0694, 'Helioptile', 'SSP', 154, 'Colorless', 70, 'miki kuda', 'Common'
+  UNION ALL
+  SELECT 0967, 'Cyclizar', 'PAF', 070, 'Dragon', 120, 'GIDORA', 'Holo Rare'
+  UNION ALL
+  SELECT 0935, 'Charcadet','SSP', 033, 'Fire', 80, 'Mékayu', 'Common'
+  UNION ALL
+  SELECT 0363, 'Spheal', 'SSP', 043, 'Water', 70, 'Teeziro', 'Common'
+  UNION ALL
+  SELECT 1001, 'Wo-Chien', 'SSP', 015, 'Grass', 130, 'danciao', 'Reverse Holo'
+  UNION ALL
+  SELECT 0479, 'Rotom', 'SSP', 061, 'Lightning', 80, 'Shinya Mizuno', 'Common'
+  UNION ALL
+  SELECT 0175, 'Togepi', 'SSP', 070, 'Psychic', 50, 'Yoko Hishida', 'Common'
+)
+SELECT *
+FROM newCards
+WHERE EXISTS (
+  SELECT 1 FROM Pokemon
+  WHERE poke_id = Pokemon.poke_id
+);
+
+-- Add new Pokémon to Pokémon table;
+WITH newCards (poke_id, card_name, set_id, set_no, poke_type, poke_hp, illustrator, rarity_class)  AS (
+  SELECT 0694, 'Helioptile', 'SSP', 154, 'Colorless', 70, 'miki kuda', 'Common'
+  UNION ALL
+  SELECT 0967, 'Cyclizar', 'PAF', 070, 'Dragon', 120, 'GIDORA', 'Holo Rare'
+  UNION ALL
+  SELECT 0935, 'Charcadet','SSP', 033, 'Fire', 80, 'Mékayu', 'Common'
+  UNION ALL
+  SELECT 0363, 'Spheal', 'SSP', 043, 'Water', 70, 'Teeziro', 'Common'
+  UNION ALL
+  SELECT 1001, 'Wo-Chien', 'SSP', 015, 'Grass', 130, 'danciao', 'Reverse Holo'
+  UNION ALL
+  SELECT 0479, 'Rotom', 'SSP', 061, 'Lightning', 80, 'Shinya Mizuno', 'Common'
+  UNION ALL
+  SELECT 0175, 'Togepi', 'SSP', 070, 'Psychic', 50, 'Yoko Hishida', 'Common'
+)
+INSERT INTO Pokemon (poke_id, poke_name)
+SELECT newCards.poke_id, newCards.card_name
+FROM newCards
+WHERE NOT EXISTS (
+  SELECT 1 FROM Pokemon
+  WHERE poke_id = Pokemon.poke_id
+);
+
+-- Verify insert operation:
+WITH newCards (poke_id, card_name, set_id, set_no, poke_type, poke_hp, illustrator, rarity_class)  AS (
+  SELECT 0694, 'Helioptile', 'SSP', 154, 'Colorless', 70, 'miki kuda', 'Common'
+  UNION ALL
+  SELECT 0967, 'Cyclizar', 'PAF', 070, 'Dragon', 120, 'GIDORA', 'Holo Rare'
+  UNION ALL
+  SELECT 0935, 'Charcadet','SSP', 033, 'Fire', 80, 'Mékayu', 'Common'
+  UNION ALL
+  SELECT 0363, 'Spheal', 'SSP', 043, 'Water', 70, 'Teeziro', 'Common'
+  UNION ALL
+  SELECT 1001, 'Wo-Chien', 'SSP', 015, 'Grass', 130, 'danciao', 'Reverse Holo'
+  UNION ALL
+  SELECT 0479, 'Rotom', 'SSP', 061, 'Lightning', 80, 'Shinya Mizuno', 'Common'
+  UNION ALL
+  SELECT 0175, 'Togepi', 'SSP', 070, 'Psychic', 50, 'Yoko Hishida', 'Common'
+)
+SELECT * FROM newCards N
+LEFT JOIN Pokemon P on N.poke_id = P.poke_id;
+
+-- Select Pokémon that were added successfully:
+WITH newCards (poke_id, card_name, set_id, set_no, poke_type, poke_hp, illustrator, rarity_class)  AS (
+  SELECT 0694, 'Helioptile', 'SSP', 154, 'Colorless', 70, 'miki kuda', 'Common'
+  UNION ALL
+  SELECT 0967, 'Cyclizar', 'PAF', 070, 'Dragon', 120, 'GIDORA', 'Holo Rare'
+  UNION ALL
+  SELECT 0935, 'Charcadet','SSP', 033, 'Fire', 80, 'Mékayu', 'Common'
+  UNION ALL
+  SELECT 0363, 'Spheal', 'SSP', 043, 'Water', 70, 'Teeziro', 'Common'
+  UNION ALL
+  SELECT 1001, 'Wo-Chien', 'SSP', 015, 'Grass', 130, 'danciao', 'Reverse Holo'
+  UNION ALL
+  SELECT 0479, 'Rotom', 'SSP', 061, 'Lightning', 80, 'Shinya Mizuno', 'Common'
+  UNION ALL
+  SELECT 0175, 'Togepi', 'SSP', 070, 'Psychic', 50, 'Yoko Hishida', 'Common'
+)
+SELECT * FROM Pokemon P
+WHERE EXISTS (
+  SELECT 1 FROM newCards N
+  WHERE N.poke_id = P.poke_id
+);
+
+-- searches Pokémon for cards not in newCards:
+WITH newCards (poke_id, card_name, set_id, set_no, poke_type, poke_hp, illustrator, rarity_class)  AS (
+  SELECT 0694, 'Helioptile', 'SSP', 154, 'Colorless', 70, 'miki kuda', 'Common'
+  UNION ALL
+  SELECT 0967, 'Cyclizar', 'PAF', 070, 'Dragon', 120, 'GIDORA', 'Holo Rare'
+  UNION ALL
+  SELECT 0935, 'Charcadet','SSP', 033, 'Fire', 80, 'Mékayu', 'Common'
+  UNION ALL
+  SELECT 0363, 'Spheal', 'SSP', 043, 'Water', 70, 'Teeziro', 'Common'
+  UNION ALL
+  SELECT 1001, 'Wo-Chien', 'SSP', 015, 'Grass', 130, 'danciao', 'Reverse Holo'
+  UNION ALL
+  SELECT 0479, 'Rotom', 'SSP', 061, 'Lightning', 80, 'Shinya Mizuno', 'Common'
+  UNION ALL
+  SELECT 0175, 'Togepi', 'SSP', 070, 'Psychic', 50, 'Yoko Hishida', 'Common'
+)
+SELECT * FROM Pokemon
+WHERE EXISTS (
+  SELECT 1 FROM newCards
+  WHERE poke_id = Pokemon.poke_id
+);
+
 
 /* Query that performs the following:
     (A) updates all null ID values, by
