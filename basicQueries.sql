@@ -57,3 +57,43 @@ ORDER BY 4,3,2,1; -- overall sorted by weight (name etc. within)
 SELECT Name,Type,Height,Weight
 FROM gen1Pokemon
 ORDER BY 4 DESC,3,2,1; -- order by reverse weight
+
+/* FILTERING DATA PRACTICE: --
+ * Checking for matches
+ * Checking for nonmatches
+ * Checking for a range of values
+ * Checking for no value
+ * Using the AND operator
+ * Using the OR operator
+ * Using AND and OR operator
+ * Using the IN operator
+ * Using the NOT operator
+ * Using the LIKE operator
+ * The WHERE clause operator
+ */
+
+-- Filter by only grass-type Pokémon
+SELECT Name, Number, Type
+FROM gen1Pokemon
+WHERE Type = 'Grass'
+ORDER BY 2,1;
+
+-- Filter by cards not matching Fire
+SELECT Name, Number, Type
+FROM gen1Pokemon
+WHERE TYPE <> 'Fire'
+ORDER BY Type;
+
+-- check for a range...
+SELECT Name, Number
+FROM gen1Pokemon
+WHERE Number BETWEEN 1 AND 10;
+
+-- check outside a range...
+SELECT Name, Number
+FROM gen1Pokemon
+WHERE Number < 5 OR Number >= 15;
+
+-- Check for null/missing values:
+SELECT *
+FROM gen1Pokemon;
