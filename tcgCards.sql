@@ -90,7 +90,7 @@ WHERE SetId = 'SSP';
 -----------------------------------------------------------------------
 /*  2. Update missing values from 2 newly added cards.  */
 -----------------------------------------------------------------------
--- Update Illustrator for both added cards.
+--.* First: update Illustrator for both added cards.
 
 -- Select both cards needing updates...
 SELECT *
@@ -146,7 +146,6 @@ WITH updatedCards (Name, Illustrator) AS (
     WHERE Name = 'Dragon Elixir' AND ILLUSTRATOR LIKE 'AYUMI%'
        OR Name = 'Deduction Kit' AND ILLUSTRATOR LIKE 'AYUMI%'
   )
-
 SELECT * FROM tcgCards C
 WHERE EXISTS (
   SELECT 1 FROM updatedCards U
@@ -154,3 +153,6 @@ WHERE EXISTS (
              AND U.Illustrator = C.Illustrator
              AND C.Illustrator = 'AYUMI ODASHIMI'
 );
+
+--.* Next step: update CardHolo boolean and RaritySymbol using CASE.
+--.* Finally, update SetName and CardEffect.
