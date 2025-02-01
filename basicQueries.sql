@@ -106,7 +106,7 @@ FROM gen1Pokemon
 WHERE Id IS NOT NULL
 AND Type2 != 'None';
 
---create temp pokemon with alternate poison/grass typing
+--create temp Pokémon with alternate poison/grass typing
 INSERT INTO gen1Pokemon (Name, Type, Type2, Number)
 SELECT 'Kakuna2', 'Poison', 'Grass', 1014;
 
@@ -121,7 +121,7 @@ WHERE Type IN ('Grass','Poison') AND
       Type2 IN ('Grass','Poison');
 
 ------------------------------------------------------------------------------------------
--- copy and drop table if necessary
+/* > copy and drop table if necessary   */
 CREATE TABLE gen1Pokemon2
 (
   Id          INTEGER                      DEFAULT NULL,
