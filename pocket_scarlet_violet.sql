@@ -103,16 +103,16 @@ WHERE NOT EXISTS (SELECT 1 FROM gen_4_updated);
 --  Update Pokémon to include height and flavor (style) text.
 UPDATE Pokemon
 SET height = CASE poke_id
-    WHEN 160 THEN 91
-    WHEN 212 THEN 71
-    WHEN 462 THEN 47
-    WHEN 422 THEN 35
+      WHEN 160 THEN 91
+      WHEN 212 THEN 71
+      WHEN 462 THEN 47
+      WHEN 422 THEN 35
     END,
     style_text = CASE poke_id
-    WHEN 160 THEN 'When it bites with its massive and powerful jaws, it shakes its head and savagely tears its victim up.'
-    WHEN 212 THEN 'This Pokémon''s pincers, which contain steel, can crush any hard object it gets a hold of into bits.'
-    WHEN 462 THEN 'Exposure to a special magnetic field changed Magneton''s molecular structure, turning it into Magnezone.'
-    WHEN 422 THEN 'It apparently had a huge shell for protection in ancient times. It lives in shallow tidal pools.'
+      WHEN 160 THEN 'When it bites with its massive and powerful jaws, it shakes its head and savagely tears its victim up.'
+      WHEN 212 THEN 'This Pokémon''s pincers, which contain steel, can crush any hard object it gets a hold of into bits.'
+      WHEN 462 THEN 'Exposure to a special magnetic field changed Magneton''s molecular structure, turning it into Magnezone.'
+      WHEN 422 THEN 'It apparently had a huge shell for protection in ancient times. It lives in shallow tidal pools.'
     END
 WHERE poke_id IN (160, 212, 462, 422);
 
