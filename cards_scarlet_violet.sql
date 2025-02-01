@@ -49,6 +49,9 @@ WHERE card_id = 7101
 -------------------------------------------------------
 /*  3. Insert more unique cards of similar Pokemon. */
 -------------------------------------------------------
+ALTER TABLE Cards
+ADD COLUMN rarity_count INTEGER;
+
 INSERT INTO Cards (card_id, card_name, poke_id, set_id, set_no, illustrator, rarity_class, rarity_count)
 SELECT 65, 'Porygon', 137, 1, 65, 'Tomoaki Imakuni', 'Black Star', 0
 WHERE NOT EXISTS (
@@ -160,6 +163,95 @@ WHERE set_id IN ('SPE', 'OBF', 'TEF', 'SSP');
 SELECT card_id, card_name, poke_id, set_id, set_no, illustrator, rarity_class
 FROM Cards
 WHERE card_id IS NULL;
+
+----------------------------------------------
+/*  7. Insert new cards and modify table.  */
+----------------------------------------------
+-- Drop rarity_count; 'accidentally' drop rarity_class (to fix):
+/* ALTER TABLE Cards  */
+/*   DROP COLUMN rarity_count;  */
+ALTER TABLE Cards
+  DROP COLUMN rarity_class;
+ALTER TABLE Cards
+  ADD COLUMN rarity_class TEXT(30);
+
+SELECT * FROM Cards
+-- SET rarity_class = ''
+WHERE card_name = 'Phantump'
+AND (set_id = 'OBF' AND set_no = 11);
+
+-- Add more cards to SSP
+WITH toInsert (card_name, poke_id, set_id, set_no, illustrator, rarity_class) AS (
+    SELECT 'Pikachu', 25, 'SSP', 20, 'M3', 'Common'
+    UNION ALL
+    SELECT 'Porygon', 137, 'SSP', 21, 'M3', 'Uncommon'
+  )
+INSERT INTO Cards (card_name, poke_id, set_id, set_no, illustrator, rarity_class)
+SELECT * FROM toInsert
+WHERE NOT EXISTS ( -- set_id || set_no IS UNIQUE
+  SELECT 1 FROM Cards
+  WHERE Cards.set_id = toInsert.set_id AND Cards.set_no = toInsert.set_no
+);
+
+--------------------------------------------------------------
+/*  8. Fix cards to re-add rarity_class that was dropped:  */
+--------------------------------------------------------------
+-- update rarity class after column dropped:
+UPDATE Cards
+SET rarity_class = (
+  SELECT N.rarity_class
+  FROM (
+    SELECT 'SPE' as set_id, 205 as set_no, 'Illustration Rare' as rarity_class
+    UNION ALL
+    SELECT 'OBF', 11, 'Common'
+    UNION ALL
+    SELECT 'TEF', 8, 'Common'
+    UNION ALL
+    SELECT 'SSP', 132, 'Holo Rare'
+  ) N
+  WHERE N.set_id = Cards.set_id
+    AND N.set_no = Cards.set_no
+)
+WHERE (set_id, set_no) IN (
+  ('SPE', 205),
+  ('OBF', 11),
+  ('TEF', 8),
+  ('SSP', 132)
+  );
+
+-- Insert new cards from SSP and PAF to Cards
+--   but do not insert if Pokémon does not exist in Pokémon table
+--   or if duplicate card already exists.
+WITH newCards (poke_id, card_name, set_id, set_no, poke_type, poke_hp, illustrator, rarity_class)  AS (
+  SELECT 0694, 'Helioptile', 'SSP', 154, 'Colorless', 70, 'miki kuda', 'Common'
+  UNION ALL
+  SELECT 0967, 'Cyclizar', 'PAF', 070, 'Dragon', 120, 'GIDORA', 'Holo Rare'
+  UNION ALL
+  SELECT 0935, 'Charcadet','SSP', 033, 'Fire', 80, 'Mékayu', 'Common'
+  UNION ALL
+  SELECT 0363, 'Spheal', 'SSP', 043, 'Water', 70, 'Teeziro', 'Common'
+  UNION ALL
+  SELECT 1001, 'Wo-Chien', 'SSP', 015, 'Grass', 130, 'danciao', 'Reverse Holo'
+  UNION ALL
+  SELECT 0479, 'Rotom', 'SSP', 061, 'Lightning', 80, 'Shinya Mizuno', 'Common'
+  UNION ALL
+  SELECT 0175, 'Togepi', 'SSP', 070, 'Psychic', 50, 'Yoko Hishida', 'Common'
+)
+INSERT INTO Cards (card_name, poke_id, set_id, set_no, poke_type, poke_hp, illustrator, rarity_class)
+SELECT * FROM newCards
+WHERE NOT EXISTS ( -- no set duplicates allowed
+  SELECT 1 FROM Cards
+  WHERE (Cards.set_id = newCards.set_id AND
+        Cards.set_no = newCards.set_no)
+)
+AND EXISTS ( -- and Pokémon exists in Pokédex
+  SELECT 1 FROM Pokemon
+  WHERE (Pokemon.poke_id = newCards.poke_id)
+);
+
+SELECT set_id, set_no, card_name, rarity_class
+FROM Cards
+WHERE set_id IN ('SPE', 'OBF', 'TEF', 'SSP', 'PAF');
 
 /* Query that performs the following:
     (A) updates all null ID values, by
