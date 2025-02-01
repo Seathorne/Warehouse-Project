@@ -36,7 +36,8 @@ CREATE TABLE IF NOT EXISTS tcgCards (
   RaritySymbol TEXT(20), -- e.g. 'Black Star', 'Diamond', 'Circle';
   Rarity TEXT(20), -- 'Holo Rare', 'Common', 'Full Art';
   CardHolo BOOLEAN,  -- True/False;
-  CardEffect TEXT(100) -- Card description or text/effect in play.
+  CardEffect TEXT(100), -- Card description or text/effect in play.
+  Language TEXT(20) -- E.g., English, French, Spanish, Japanese.
 );
 
 -- Verify table exists (empty):
@@ -182,7 +183,7 @@ WHERE CardId = 1
 
 ----------------------------------------------------------------]
 
---.* Next, update SetName and CardEffect.
+--.* Next, update SetName.
 UPDATE tcgCards
 SET SetName = 'Surging Sparks'
 WHERE SetId = 'SSP'
@@ -200,7 +201,7 @@ WHERE SetName = 'Surging Sparks';
 
 -- Find any including slightly misspelled card set names:
 SELECT * -- e.g. WHERE SetName = 'Surge Spark' or 'Surging Sparks'
-FROM tcgCards WHERE SetName LIKE 'Surg%Sp%'
+FROM tcgCards WHERE SetName LIKE 'Surg%Sp%';
 
 -- Find only slightly misspelled card set names:
 SELECT * -- e.g. WHERE SetName = 'Surge Spark' instead of 'Surging Sparks'
@@ -234,4 +235,82 @@ WHERE Name LIKE '%Lisia%';
 
 ----------------------------------------------------------------------------------------]
 
---.* For the last step, update RaritySymbol based on Rarity text (e.g. circle, star).
+--.* For the next step, update RaritySymbol based on Rarity text (e.g. circle, star):
+/*     When text has "Rare", update symbol to 'Star'
+/*     When text has "Common", update symbol to 'Circle'
+/*     When text has "Uncommon", update symbol to 'Diamond'
+/*  etc.  */
+UPDATE tcgCards
+SET RaritySymbol = CASE
+   WHEN Rarity LIKE '%Rare%' THEN 'Star'
+   WHEN Rarity LIKE '%Common%' THEN 'Circle'
+   WHEN Rarity LIKE '%Uncommon%' THEN 'Diamond'
+   ELSE RaritySymbol
+END
+WHERE RaritySymbol IS NULL
+  OR RaritySymbol = '';
+
+-- View all relevant columns of updated cards;
+--   verify there are no null fields left except CardEffect & Language.
+SELECT * FROM tcgCards;
+
+-- Update to English cards:
+UPDATE tcgCards
+SET Language = 'English'
+WHERE SetId = 'SSP'
+AND SetNumber < 192;
+
+-- Update hidden cards to include PROMO:
+UPDATE tcgCards
+SET Language = 'English PROMO'
+WHERE SetId = 'SSP'
+AND SetNumber >= 192;
+
+-- Delete this range of cards:
+DELETE FROM tcgCards
+WHERE SetId = 'SSP' AND SetNumber BETWEEN 171 AND 179; -- 180, not-inclusive
+
+-- Add cards in their entirety;;;
+WITH insertCards(Name,CardType,SetId,SetName,SetNumber,Rarity,RaritySymbol,CardHolo,Language)
+  AS (
+    SELECT 'Deduction Kit','TRAINER','SSP','Surging Sparks',171,'Reverse Holo','Black Diamond',TRUE
+    UNION ALL
+    SELECT 'Dragon Elixir','Trainer','SSP','Surge Spark',172,'Common','Single Diamond',FALSE
+    UNION ALL
+    SELECT 'Lisia''s Appeal','trainer','SSP','Surgin'' Sparks',179,'Common','Black Diamond',FALSE
+) -- alias for new
+    --  cards we're inserting
+INSERT INTO tcgCards
+SELECT * FROM insertCards AS InsertionSelection;
+
+UPDATE *
+SET CardSubType
+  FROM tcgCards
+  WHERE Name = 'Dragon'
+
+-- Add card effects (//flavor text).
+SELECT * FROM tcgCards
+--SET CardEffect = 'Heal 60 damage from your active Dragon Pokemon.'
+WHERE SetId = 172 OR Name = 'Dragon Elixir';
+
+-- Show cards with full text.
+SELECT Name, ('H-'
+     || SetId || ' ' || SetNumber || '/' || 191)
+         AS clctNo,
+       (Rarity || ' [' || RaritySymbol || ']')
+          AS rareFullText,
+       (CardType || '->' || CardSubType) AS type,
+       CardEffect,Illustrator
+FROM tcgCards;
+
+-- Update text to show collector's info.
+UPDATE tcgCards
+SET CardEffect = '{ H-'
+  || SetId || SetNumber || '/191 '
+  || '[' || RaritySymbol || '] }'
+  || CardEffect -- concat to original value
+WHERE SetId = 'SSP'       /* WHEN in SSP      */
+  AND NOT (CardEffect == ''      -- not null...
+           OR CardEffect IS NULL)
+AND CardType = 'TRAINER'    -- +is Trainer Card; */
+   OR CardType LIKE 'Tr%' OR CardType LIKE 'tr%';
