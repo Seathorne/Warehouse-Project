@@ -95,5 +95,58 @@ FROM gen1Pokemon
 WHERE Number < 5 OR Number >= 15;
 
 -- Check for null/missing values:
+--  > Requires a nullable column in table :|
 SELECT *
+FROM gen1Pokemon
+WHERE Id IS NULL;
+
+-- check for non-null values (two-types only)
+SELECT Id, Name, Type, Type2
+FROM gen1Pokemon
+WHERE Id IS NOT NULL
+AND Type2 != 'None';
+
+--create temp pokemon with alternate poison/grass typing
+INSERT INTO gen1Pokemon (Name, Type, Type2, Number)
+SELECT 'Kakuna2', 'Poison', 'Grass', 1014;
+
+SELECT Name,Type,Type2,Number
 FROM gen1Pokemon;
+--------------------Then,
+
+-- Find poison/grass types:
+SELECT Id, Name, Type, Type2
+FROM gen1Pokemon
+WHERE Type IN ('Grass','Poison') AND
+      Type2 IN ('Grass','Poison');
+
+------------------------------------------------------------------------------------------
+-- copy and drop table if necessary
+CREATE TABLE gen1Pokemon2
+(
+  Id          INTEGER                      DEFAULT NULL,
+  Name        TEXT(20) UNIQUE     NOT NULL DEFAULT '',
+  Type        TEXT(20)                     DEFAULT 'None',
+  Type2       TEXT(20)                     DEFAULT 'None',
+  Height      INTEGER                      DEFAULT 0, -- Height in feet and inches.
+  Weight      DECIMAL(3, 2)                DEFAULT 0, -- Weight in lbs.
+  Number      INTEGER PRIMARY KEY NOT NULL,           -- Pokedex #
+  Description TEXT(70)                     DEFAULT 'Uninit'
+);
+
+SELECT * FROM gen1Pokemon2;
+
+INSERT INTO gen1Pokemon2
+SELECT row_number() over (ORDER BY Number) as Id,
+  Name, Type, Type2, Height, Weight, Number, Description
+FROM gen1Pokemon;
+
+SELECT * FROM gen1Pokemon2;
+
+DROP TABLE gen1Pokemon;
+
+ALTER TABLE gen1Pokemon2
+RENAME TO gen1Pokemon;
+
+-- DROP TABLE gen1Pokemon2
+------------------------------------------------------------------------------------------
