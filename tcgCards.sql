@@ -69,4 +69,22 @@ SELECT Name,CardSubType, Illustrator, Rarity
 FROM tcgCards
 WHERE SetId = 'SSP' AND SetNumber = 179;
 
+-- Rename column "CardSet" to "SetName"
+/* Not allowed in SQLite ***/
+-- ALTER TABLE tcgCards
+-- MODIFY COLUMN CardSet
+-- RENAME TO SetName;
+/* Must recreate table or modify manually. */
+
+-- Add more cards with multiples VALUES:
+/* Missing: Illustrator, CardHolo bool, CardId, SetName, rarity symbol, card effect text.  */
+INSERT INTO tcgCards (Name, CardType, CardSubType, SetId, SetNumber, Rarity)
+VALUES ('Dragon Elixir', 'TRAINER', 'Item', 'SSP', 172, 'Common'),
+       ('Deduction Kit', 'TRAINER', 'Item', 'SSP', 171, 'Common');
+
+-- Verify new cards (should be 3 in total):
+SELECT *
+FROM tcgCards
+WHERE SetId = 'SSP';
+
 -----------------------------------------------------------------------
