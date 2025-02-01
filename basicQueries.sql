@@ -1,9 +1,9 @@
 /* RETRIEVING DATA PRACTICE ******
-   Retrieving single/multiple columns
-   Retrieving all columns
-   Retrieving distinct rows
-   Retrieving with limited access
-   */
+ * Retrieving single/multiple columns
+ * Retrieving all columns
+ * Retrieving distinct rows
+ * Retrieving with limited access
+ */
 -- Select all:
 SELECT * FROM gen1Pokemon;
 
@@ -32,3 +32,28 @@ WITH ordered AS
  FROM gen1Pokemon
 )
 SELECT * FROM ordered WHERE row_num >= 15;
+
+/* SORTING DATA PRACTICE:;
+ * Sort by single column
+ * Sort by multiple columns
+ * Sort by column position
+ * Specify sort direction
+ */
+
+ -- Order by column value:
+ SELECT Name
+ FROM gen1Pokemon
+ ORDER BY Name;
+
+-- Order by several column values:
+SELECT Name,Type
+FROM gen1Pokemon
+ORDER BY Type,Name; -- orders by type last (highest level)
+
+SELECT Name,Type,Height,Weight
+FROM gen1Pokemon
+ORDER BY 4,3,2,1; -- overall sorted by weight (name etc. within)
+
+SELECT Name,Type,Height,Weight
+FROM gen1Pokemon
+ORDER BY 4 DESC,3,2,1; -- order by reverse weight
