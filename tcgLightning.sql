@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS tcgCards (
   Rarity TEXT(20), -- 'Holo Rare', 'Common', 'Full Art';
   CardHolo BOOLEAN,  -- True/False;
   CardEffect TEXT(100), -- Card description or text/effect in play.
-  Language TEXT(20) -- E.g., English, French, Spanish, Japanese.
+  Language TEXT(20), -- E.g., English, French, Spanish, Japanese.
+  PrintedYear TEXT(4)
 );
 /********************************************************************/
 
@@ -54,7 +55,7 @@ WITH newCards (CardType, CardSubType, Name, SetId, SetNumber, Rarity, RaritySymb
         AS (
   SELECT 'Pokemon', 'LEVEL-UP', 'Luxray GL Lv. X', 'PL2', 109, 'Rare', 'Star', 'Mitsuhiro Arita', 'Put this card onto your active Luxray GL. Luxray GL Lv. X can use any attack, Poké-Power, or Poké-Body from its previous levels.'
     UNION ALL
-  SELECT 'Pokemon', 'Basic', 'Tynamo', NULL, 38, 'Common', 'Circle', 'sui', NULL
+  SELECT 'Pokemon', 'Basic', 'Tynamo', 'BW3', 38, 'Common', 'Circle', 'sui', 'None' /* no special effect */
 )
 INSERT INTO tcgCards (CardType, CardSubType, Name, SetId, SetNumber, Rarity, RaritySymbol, Illustrator, CardEffect)
   SELECT * FROM newCards N
@@ -63,6 +64,10 @@ INSERT INTO tcgCards (CardType, CardSubType, Name, SetId, SetNumber, Rarity, Rar
                              AND T.SetId = N.SetId
                              AND T.SetNumber = N.SetId
   );
+
+-- (If you need to start over) ;
+DELETE FROM tcgCards WHERE CardType = 'Pokemon';
+SELECT Name, Type FROM tcgCards WHERE CardType = 'Pokemon';
 
 -- Set type for Luxray and Tynamo
   UPDATE tcgCards
@@ -83,14 +88,35 @@ CREATE TABLE IF NOT EXISTS sets (
   SetName TEXT(20),
   Length INTEGER,
   HiddenLength INTEGER,
-  Symbol TEXT(30)
+  Symbol TEXT(30),
+  Year TEXT(4)
 );
 
 -- Populate sets table with names, length and symbol:
 INSERT INTO sets
-VALUES ('PL2', 'Platinum: Rising Rivals', 111, 114, 'Black X on White');
+  VALUES ('PL2', 'Platinum: Rising Rivals', 111, 114, 'Black X on White', 2009);
+INSERT INTO sets
+  VALUES ('BW3', 'Black & White: Noble Victories', 101, 102, 'Black V', 2011);
 
 -- View all sets by name:
-SELECT SetId, SetName, Length, Symbol FROM sets;
+SELECT SetId, SetName, Length, Symbol, Year FROM sets;
 
 --------------------------------------------------------------------------
+
+-- Add column for PrintedYear to Pokémon cards.
+ALTER TABLE tcgCards
+  ADD COLUMN PrintedYear TEXT(4);
+
+-- Show cards by name and printed year;
+SELECT Name, PrintedYear
+  FROM tcgCards;
+
+-- Copy year from sets table to cards table:
+UPDATE tcgCards
+SET PrintedYear = CASE SetId
+  WHEN 'PL2' THEN '2009'
+  WHEN 'BW3' THEN '2011'
+END
+WHERE Type = 'Lightning'
+
+-------------------------------
