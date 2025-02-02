@@ -112,11 +112,11 @@ ORDER BY 1 DESC, 2 DESC, 4 DESC;
  --  (use aggregate CTEs to calculate country population, city average population,)
  --  (use GROUP BY country to condense results for all cities,)
  --  (use HAVING to check conditional and filter by minimum population,)
- --  (finally, sort with ORDER BY; first by city average population...last by Continent.)
+ --  (finally, sort with ORDER BY; descending by city average population...then by Continent.)
 SELECT Continent, Country,
        SUM(Population) as CountryPopulation,
        AVG(Population) as AverageCityPopulation
 FROM cities
   GROUP BY Country
 HAVING AVG(Population) > 1000
-ORDER BY 1, 2, 3 DESC, 4 DESC;
+ORDER BY 1, 4 DESC;
