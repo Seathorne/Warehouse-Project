@@ -5,6 +5,7 @@
     <file url="file://$PROJECT_DIR$/basicQueries.sql" dialect="SQLite" />
     <file url="file://$PROJECT_DIR$/basicQueries2.sql" dialect="SQLite" />
     <file url="file://$PROJECT_DIR$/cards_scarlet_violet.sql" dialect="SQLite" />
+    <file url="file://$PROJECT_DIR$/geoQuery.sql" dialect="SQLite" />
     <file url="file://$PROJECT_DIR$/geoSetup.sql" dialect="SQLite" />
     <file url="file://$PROJECT_DIR$/kantoView.sql" dialect="SQLite" />
     <file url="file://$PROJECT_DIR$/pocket.sql" dialect="SQLite" />
