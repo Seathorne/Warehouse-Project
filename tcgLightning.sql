@@ -130,15 +130,14 @@ SELECT cards.Name, sets.Name,
     JOIN sets ON cards.SetId = sets.SetId
 WHERE cards.Type = 'Lightning';
 
-
-
+-- Select all cards whose first type is Lightning:
+SELECT Name
+  FROM tcgCards
+WHERE Type LIKE 'Lightning%' OR Type = 'Electric%';
 
 -----------------------------------------------------
 
---  alsdjlasjadskj
-WITH gen_4_updated AS (
-    SELECT 1 FROM tcgCards WHERE Name LIKE '%/%'
-)
+-- Insert gen 4 cards
 INSERT INTO tcgCards (Name, Type)
 SELECT * FROM (
    VALUES
@@ -146,9 +145,43 @@ SELECT * FROM (
        ('Scizor', 'Bug/Steel'),
        ('Magnezone', 'Electric/Steel'),
        ('Gastrodon', 'Water/Ground')
-) AS new_values
-WHERE NOT EXISTS (SELECT 1 FROM gen_4_updated);
+) AS new_values;
 
+-- Select all cards
 SELECT * FROM tcgCards;
+
+-- Delete all new cards (Null Set ID)
+DELETE FROM tcgCards
+WHERE SetId IS NULL;
+
+--------------------------------------------
+
+-- First, search for second types,
+UPDATE tcgCards
+  SET Type2 = 'Lightning'
+WHERE Type LIKE '%/Lightning' OR Type = '%/Electric';
+
+-- Find all double-types; separate type columns:
+UPDATE tcgCards
+ SET Type2 = substr(Type, instr(Type, '/') + 1)
+WHERE Type LIKE '%/%';
+
+UPDATE tcgCards
+ SET Type = substr(Type, 1, instr(Type, '/') - 1)
+WHERE Type LIKE '%/%';
+
+-- Show cards by name and type:
+SELECT Name, Type, Type2
+  FROM tcgCards;
+
+-- Update cards to have consistent type name:
+UPDATE tcgCards
+  SET Type = 'Lightning'
+WHERE Type LIKE 'Lightning%' OR Type LIKE 'Electric%';
+
+-- Update those with NULL second type to "None":
+UPDATE tcgCards
+  SET Type2 = 'None'
+WHERE Type2 IS NULL;
 
 --------------------------------------------------------
