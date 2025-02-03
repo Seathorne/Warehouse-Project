@@ -3,18 +3,23 @@
 CREATE TABLE IF NOT EXISTS tcgCards (
   CardId INTEGER PRIMARY KEY, -- Implied unique;
   Name TEXT(20),
-  Illustrator TEXT(20), -- e.g. 'Ken Sugimori', 'AYUMI ODASHIMI'
-  CardType TEXT(10), -- e.g. 'Pokemon', 'Trainer';
-  CardSubType TEXT(20), -- e.g. 'Basic', 'Supporter', 'Item', 'Lv. X' ;
-  SetName TEXT(20), -- e.g. 'Base Set', 'Jungle', 'Surging Sparks';
-  SetId TEXT(5), -- e.g. 'PAF', 'TEF', 'BW2', 'SSP' only;
-  SetNumber INTEGER, -- e.g. 171 (/191 --> JOIN with tcgSets.);
-  RaritySymbol TEXT(20), -- e.g. 'Black Star', 'Diamond', 'Circle';
+  Illustrator TEXT(20), -- E.g. 'Ken Sugimori', 'AYUMI ODASHIMI'
+  CardType TEXT(10), -- E.g. 'Pokemon', 'Trainer';
+  CardSubType TEXT(20), -- E.g. 'Basic', 'Supporter', 'Item', 'Lv. X' ;
+  SetName TEXT(20), -- E.g. 'Base Set', 'Jungle', 'Surging Sparks';
+  SetId TEXT(5), -- E.g. 'PAF', 'TEF', 'BW2', 'SSP' only;
+  SetNumber INTEGER, -- E.g. 171 (/191 --> JOIN with tcgSets.);
+  RaritySymbol TEXT(20), -- E.g. 'Black Star', 'Diamond', 'Circle';
   Rarity TEXT(20), -- 'Holo Rare', 'Common', 'Full Art';
   CardHolo BOOLEAN,  -- True/False;
   CardEffect TEXT(100), -- Card description or text/effect in play.
   Language TEXT(20), -- E.g., English, French, Spanish, Japanese.
-  PrintedYear TEXT(4)
+  PrintedYear TEXT(4), -- E.g. '2024', '2009'
+  Type TEXT(10), -- E.g., 'Grass', 'Lightning', 'Metal', 'Electric'
+  Type2 TEXT(10), -- E.g., 'Poison', 'Ground'
+  AbilityName TEXT(20), -- E.g., 'Adverse Weather'
+  AbilityText TEXT(100), -- Passive abilities for each Pokémon
+  StyleText TEXT(100) -- Flavor/style text for specific cards
 );
 /********************************************************************/
 
@@ -184,4 +189,66 @@ UPDATE tcgCards
   SET Type2 = 'None'
 WHERE Type2 IS NULL;
 
---------------------------------------------------------
+---------------------------------------------------------------
+
+/** Insert Cool Lightning Cards  **/
+
+  -- First, modify columns to add style text and abilities
+
+-- Then update previous cards,
+UPDATE tcgCards
+  SET AbilityName = 'Bright Look',
+      AbilityText = 'Once during your turn (before your attack), when you put Luxray GL Lv. X from your hand onto your Active Luxray GL, you may switch the Defending Pokémon with 1 of your opponent''s Benched Pokémon.',
+      StyleText = ''
+WHERE SetId = 'PL2' AND Name LIKE 'Luxray%';
+
+UPDATE tcgCards
+  SET AbilityName = 'None',
+      AbilityText = NULL,
+      StyleText = 'While one alone doesn''t have much power, a chain of many Tynamo can be as powerful as lightning.'
+WHERE SetId = 'BW3' AND Name = 'Tynamo';
+
+-- Insert new cards collected:
+INSERT INTO tcgCards (
+    Name, Type, Type2, MaxHp,
+    CardType, CardSubType, CardEffect, StyleText,
+      AbilityName,
+    AbilityText,
+    Language, PrintedYear,
+      SetId, SetNumber, Illustrator,
+      Rarity, RaritySymbol, CardHolo)
+VALUES ('Zebstrika', 'Lightning', 'None', 120,
+         'Pokemon', 'STAGE 1', 'Evolves from Blitzle', 'They have lightning-like movements. When Zebstrika run at full speed, the sound of thunder reverberates.',
+        'None', NULL, /* No special abilities.*/
+        'English', 2023,
+         'PAR', 063, 'GOSSAN',
+         'Uncommon Reverse Holo', 'Diamond', TRUE),
+  ('Thundurus', 'Lightning', 'None', 110,
+    'Pokemon', 'BASIC', 'None', 'As it flies around, it shoots lightning all over the place and causes forest fires. It is therefore disliked.',
+   'Adverse Weather', 'As long as this Pokémon is in the Active Spot, prevent all damage done to your Benched Pokémon by attacks from your opponent''s Pokémon.',
+   'English', 2023,
+    'OBF', 070, 'GOSSAN',
+    'Rare Reverse Holo', 'Star', TRUE),
+  ('Vikavolt', 'Lightning', 'None', 160,
+    'Pokemon', 'STAGE 2', 'Evolves from Charjabug', 'It builds up electricity in its abdomen, focuses it through its jaws, and then fires the electricity off in concentrated beams.',
+   'None', NULL,
+   'English', 2024,
+    'TEF', 056, 'Hitoshi Ariga',
+    'Uncommon Reverse Holo', 'Diamond', TRUE),
+  ('Helioptile', 'Normal', 'None', 70, /*add a Normal/Colorless pokémon.*/
+    'Pokemon', 'BASIC', 'None', 'When spread, the frills on its head act like solar panels, generating the power behind this Pokémon''s electric moves.',
+   'None', NULL,
+   'English', 2024,
+    'SSP', 154, 'miki kudo',
+    'Common', 'Circle', FALSE),
+  ('Iron Thorns', 'Electric', 'None', 140,
+    'Pokemon', 'BASIC FUTURE', 'None', 'Some of its notable features match those of an object named within a certain expedition journal as Iron Thorns.',
+   'None', NULL,
+   'English', 2024,
+    'TEF', 062, 'Takeshi Nakamura',
+    'Rare Holo', 'Star', TRUE)
+ ;
+
+-- Select main fields from cards:
+SELECT Name, Type, Type2, CardEffect, AbilityName, AbilityText, SetId, SetNumber, Illustrator, StyleText
+  FROM tcgCards;
