@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS tcgCards (
   Name TEXT(20),
   Illustrator TEXT(20), -- e.g. 'Ken Sugimori', 'AYUMI ODASHIMI'
   CardType TEXT(10), -- e.g. 'Pokemon', 'Trainer';
-  CardSubType TEXT(20), -- e.g. 'EX', 'Supporter', 'Item', 'Lv. X' ;
+  CardSubType TEXT(20), -- e.g. 'Basic', 'Supporter', 'Item', 'Lv. X' ;
   SetName TEXT(20), -- e.g. 'Base Set', 'Jungle', 'Surging Sparks';
   SetId TEXT(5), -- e.g. 'PAF', 'TEF', 'BW2', 'SSP' only;
   SetNumber INTEGER, -- e.g. 171 (/191 --> JOIN with tcgSets.);
@@ -85,7 +85,7 @@ SELECT Name, SetId, SetNumber, Rarity, Type, MaxHp
 -- Create sets table to store names and length of card sets:
 CREATE TABLE IF NOT EXISTS sets (
   SetId TEXT(5),
-  SetName TEXT(20),
+  Name TEXT(20),
   Length INTEGER,
   HiddenLength INTEGER,
   Symbol TEXT(30),
@@ -99,7 +99,7 @@ INSERT INTO sets
   VALUES ('BW3', 'Black & White: Noble Victories', 101, 102, 'Black V', 2011);
 
 -- View all sets by name:
-SELECT SetId, SetName, Length, Symbol, Year FROM sets;
+SELECT SetId, Name, Length, Symbol, Year FROM sets;
 
 --------------------------------------------------------------------------
 
@@ -116,7 +116,39 @@ UPDATE tcgCards
 SET PrintedYear = CASE SetId
   WHEN 'PL2' THEN '2009'
   WHEN 'BW3' THEN '2011'
+  WHEN 'SSP' THEN '2025'
 END
-WHERE Type = 'Lightning'
+WHERE Type = 'Lightning';
 
 -------------------------------
+
+-- Selects all lightning type cards
+--  and show set number out of set length:
+SELECT cards.Name, sets.Name,
+       cards.SetNumber || '/' || sets.Length as SetNo
+  FROM tcgCards cards
+    JOIN sets ON cards.SetId = sets.SetId
+WHERE cards.Type = 'Lightning';
+
+
+
+
+-----------------------------------------------------
+
+--  alsdjlasjadskj
+WITH gen_4_updated AS (
+    SELECT 1 FROM tcgCards WHERE Name LIKE '%/%'
+)
+INSERT INTO tcgCards (Name, Type)
+SELECT * FROM (
+   VALUES
+       ('Feraligatr', 'Water'),
+       ('Scizor', 'Bug/Steel'),
+       ('Magnezone', 'Electric/Steel'),
+       ('Gastrodon', 'Water/Ground')
+) AS new_values
+WHERE NOT EXISTS (SELECT 1 FROM gen_4_updated);
+
+SELECT * FROM tcgCards;
+
+--------------------------------------------------------

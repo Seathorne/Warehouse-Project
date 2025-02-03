@@ -118,5 +118,15 @@ SELECT Continent, Country,
        AVG(Population) as AverageCityPopulation
 FROM cities
   GROUP BY Country
-HAVING AVG(Population) > 1000
+  HAVING AVG(Population) >= 25
 ORDER BY 1, 4 DESC;
+
+SELECT *
+  FROM cities
+WHERE Country = 'Russia';
+
+UPDATE cities
+  SET Country = 'Vostok'
+WHERE Name LIKE '%Vostok%';
+
+SELECT * FROM cities WHERE Country = 'Vostok';
