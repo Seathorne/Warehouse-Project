@@ -20,8 +20,9 @@ CREATE TABLE IF NOT EXISTS tcgCards2 (
   ResistType Text(10),
   RetreatCost INTEGER,
   --------------------------
-  PokeBody TEXT(20), -- e.g. 'Dragon Aura'
-  PokePower TEXT(20), -- e.g. 'Dragon Curse'
+  AbilityName TEXT(20) DEFAULT NULL,
+  PokeBody TEXT(20) NULL, -- e.g. 'Dragon Aura'
+  PokePower TEXT(20) NULL, -- e.g. 'Dragon Curse'
   Attack1Name TEXT(20), -- e.g. 'Extra Flame'
   Attack2Name TEXT(20), -- e.g. 'Heat Blast', 'Tumbling Attack'
   Attack1Cost VARCHAR(30), -- e.g. 'Fire, Water'
@@ -31,12 +32,13 @@ CREATE TABLE IF NOT EXISTS tcgCards2 (
   FlavorText TEXT(120), -- e.g. "When Kingdra gather in great numbers..."
   ------------------------
   Rarity TEXT(20), -- e.g. 'Common', 'Uncommon', 'Rare';
-  PrintedYear INTEGER, -- E.g. 2024
+  PrintYear INTEGER, -- E.g. 2024
   Illustrator TEXT(20), -- e.g. 'Ken Sugimori', 'AYUMI ODASHIMI'
   Language TEXT(20), -- E.g., English, French, Spanish, Japanese.
   Edition TEXT(20), -- 'Holo', 'Reverse Holo', 'Full Art';
   -----------------------
   SerialNumber TEXT(12),
+  Quantity INTEGER NOT NULL DEFAULT 1,
   -- FOREIGN KEY (PokeId) REFERENCES tcgPokemon(PokeID),
   PRIMARY KEY (SetNumber, SetId),
   FOREIGN KEY (SeriesId) REFERENCES tcgSeries(SeriesId),
@@ -50,7 +52,7 @@ CREATE TABLE IF NOT EXISTS tcgCards2 (
 /* Holo DELTA Kingdra – Holon Phantoms (2006)  */
 INSERT INTO tcgCards2 (
     CardName, Category, Edition, SetNumber, SetId, SeriesId, SerialNumber,
-                       Illustrator, PrintedYear, Language, Rarity, CardEffect)
+                       Illustrator, PrintYear, Language, Rarity, CardEffect)
 VALUES
 ('Kingdra', 'DELTA SPECIES Pokémon', 'Holo', 010, 35, 07, '6SP-RGE-DSR',
  'Masakazu Fukuda', 2006, 'English', 'Rare',
