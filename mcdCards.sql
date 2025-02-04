@@ -3,15 +3,15 @@ DELETE FROM tcgCards2
 WHERE SetId = 172;
 
 -- Insert cards from promotional set.
-INSERT INTO tcgCards2 (SetNumber, SetId, CardName, Category, MaxHp, Type, RetreatCost, WeakType, ResistType,
-                       Edition, Illustrator, CardEffect)
+INSERT INTO tcgCards2 (SetNumber, SetId, Category, MaxHp, Type, RetreatCost, WeakType, ResistType,
+                       CardName, Edition, Illustrator, CardEffect)
 VALUES /* Pokémon are cool */
-  (003, 172, 'Miraidon', 'BASIC Pokémon', 120, 'Lightning', 1, 'Fighting x2', NULL,
-    'Holofoil', 'Kouki Saitou', NULL),
-  (014, 172, 'Rayquaza', 'BASIC Pokémon', 130, 'Colorless', 2, 'Lightning x2', 'Fighting -30',
-   'Normal', 'so-taro', NULL),
-  (011, 172, 'Roaring Moon', 'BASIC Pokémon', 140, 'Darkness', 2, 'Grass x2', NULL,
-   'Holo', 'hncl', NULL)
+  (003, 172, 'BASIC Pokémon', 120, 'Lightning', 1, 'Fighting x2', NULL,
+   'Miraidon', 'Holofoil', 'Kouki Saitou', NULL),
+  (014, 172, 'BASIC Pokémon', 130, 'Colorless', 2, 'Lightning x2', 'Fighting -30',
+   'Rayquaza', 'Normal', 'so-taro', NULL),
+  (011, 172, 'BASIC Pokémon', 140, 'Darkness', 2, 'Grass x2', NULL,
+   'Roaring Moon', 'Holo', 'hncl', NULL)
 ;
 
 -- Update subcategory for special Pokémon classes.
