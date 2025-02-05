@@ -252,3 +252,8 @@ VALUES ('Zebstrika', 'Lightning', 'None', 120,
 -- Select main fields from cards:
 SELECT Name, Type, Type2, CardEffect, AbilityName, AbilityText, SetId, SetNumber, Illustrator, StyleText
   FROM tcgCards;
+
+-- Find all TEF cards:
+SELECT *
+FROM tcgCards
+WHERE SetId = 'TEF';

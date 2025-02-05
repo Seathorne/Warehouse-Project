@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS tcgCards2 (
   SubCategory TEXT(10) NULL, -- e.g. BASIC, ITEM, SUPPORTER
   CardEffect TEXT(100) DEFAULT NULL, -- Card description or text/effect in play.
   --------------------
-  PokeId INTEGER, -- 137 for Porygon
+  PokeNumber INTEGER, -- 137 for Porygon
   MaxHp INTEGER,
   Type TEXT(10) NULL, -- e.g. 'Fire'
   DeltaType TEXT(10) DEFAULT NULL, -- e.g. 'Metal'
@@ -61,7 +61,7 @@ VALUES
 /* Holo DELTA Kingdra – Holon Phantoms (2006)  */
 UPDATE tcgCards2
 SET Type = 'Fire', DeltaType = 'Metal', MaxHp = 110,
-    PokeId = 230, ResistType = NULL, WeakType = 'Lightning', RetreatCost = 2,
+    PokeNumber = 230, ResistType = NULL, WeakType = 'Lightning', RetreatCost = 2,
     PokeBody = NULL, PokePower = 'Dragon Curse',
     Attack1Cost = 'Fire, Colorless', Attack2Cost = 'Fire, Metal, Colorless x2',
     Attack1Damage = '30+', Attack2Damage = '80',
