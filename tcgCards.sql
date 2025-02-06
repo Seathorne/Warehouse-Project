@@ -106,7 +106,6 @@ WITH twoCards (Name, SetNumber, Illustrator) AS (
     WHERE Name = 'Dragon Elixir' AND SetNumber = 172
        OR Name = 'Deduction Kit' AND SetNumber = 171
   ) -- and...
-
 SELECT * FROM twoCards;
 
 -- Now change the query to SELECT those only where Illustrator is NULL:
@@ -116,7 +115,6 @@ WITH twoCards (Name, SetNumber, Illustrator) AS (
     WHERE Name = 'Dragon Elixir' AND SetNumber = 172
        OR Name = 'Deduction Kit' AND SetNumber = 171
   ) -- and...
-
 SELECT * FROM twoCards -- Add a condition here:
 WHERE twoCards.Illustrator IS NULL;
   /* Verify with this condition instead:  */
@@ -129,7 +127,6 @@ WITH twoCards (Name, SetNumber, Illustrator) AS (
     WHERE Name = 'Dragon Elixir' AND SetNumber = 172
        OR Name = 'Deduction Kit' AND SetNumber = 171
   ) -- and...
-
 UPDATE tcgCards
 SET Illustrator = 'AYUMI ODASHIMI'
 WHERE EXISTS ( -- Join tcgCards & twoCards on identifiers
