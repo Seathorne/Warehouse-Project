@@ -52,15 +52,22 @@ WHERE SetCode IS NOT NULL;
 
 /* Add cards from Greninja ex Battle Deck (2023)  */
 INSERT INTO tcgDeckCards (DeckId, Quantity, SetNumber, SetCode)
-VALUES (265, 1, 054, 'SVP'),  -- 1x Greninja ex
-       (265, 2, 056, 'OBF'),  -- 2x Froakie
-       (265, 2, 057, 'OBF'),  -- 2x Frogadier
+VALUES (265, 1, 054, 'SVP'), -- 1x Greninja ex
+       (265, 2, 056, 'OBF'), -- 2x Froakie
+       (265, 2, 057, 'OBF'), -- 2x Frogadier
        (265, 1, 026, 'BWND'), -- 1x Lapras
-       (265, 1, 052, 'SV1'),  -- 1x Quaxly
-       (265, 1, 053, 'SV1'),  -- 1x Quaxwell
-       (265, 1, 054, 'SV1'),  -- 1x Quaquaval
-       (265, 2, 045, 'OBF'),  -- 2x Lapras
-       (265, 2, 046, 'PAL') -- 2x Delibird
+       (265, 1, 052, 'SV1'), -- 1x Quaxly
+       (265, 1, 053, 'SV1'), -- 1x Quaxwell
+       (265, 1, 054, 'SV1'), -- 1x Quaquaval
+       (265, 2, 045, 'OBF'), -- 2x Lapras
+       (265, 2, 046, 'PAL'), -- 2x Delibird
+       (265, 1, 175, 'SV1'), -- Supporter - Jacq
+       (265, 1, 180, 'SV1'), -- Supporter - Nemona
+       (265, 1, 181, 'SV1'), -- ITEM Nest Ball
+       (265, 1, 183, 'SV1'), -- ITEM Great Ball
+       (265, 1, 186, 'SV1'), -- ITEM Pokégear 3.0
+       (265, 1, 194, 'SV1'), -- ITEM Switch
+       (265, 1, 188, 'SV1')  -- ITEM Potion
 ;
 
 -- Verify operation was successful.
@@ -127,3 +134,9 @@ FROM tcgDeckCards tC
        JOIN tcgDecks tD ON tC.DeckId = tD.Id
        JOIN tcgSets tS ON tC.SetCode = tS.SetCode
 GROUP BY tC.SetCode;
+
+-- Return total number of cards in deck:
+SELECT SUM(Quantity)
+FROM tcgDecks tD
+       LEFT JOIN tcgDeckCards tC on tD.Id = tC.DeckId
+WHERE Quantity > 0 AND tD.Id = 265;
