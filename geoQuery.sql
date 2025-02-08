@@ -1,19 +1,19 @@
 /* 1. Table setup:  */
-CREATE TABLE continents (
-  Name TEXT(20) PRIMARY KEY
+CREATE TABLE IF NOT EXISTS continents (
+  Name VARCHAR(20) PRIMARY KEY
 );
 
-CREATE TABLE countries (
-  Name Text(40) PRIMARY KEY,
-  Continent TEXT(20),
+CREATE TABLE IF NOT EXISTS countries (
+  Name VARCHAR(40) PRIMARY KEY,
+  Continent VARCHAR(20),
   Population NUMERIC(10) NOT NULL DEFAULT 0,
   FOREIGN KEY (Continent) REFERENCES continents(Name)
 );
 
-CREATE TABLE cities (
-  Name TEXT(30) PRIMARY KEY,
-  Continent TEXT(20),
-  Country TEXT(40),
+CREATE TABLE IF NOT EXISTS cities (
+  Name VARCHAR(30) PRIMARY KEY,
+  Continent VARCHAR(20),
+  Country VARCHAR(40),
   Population NUMERIC(10) NOT NULL DEFAULT 0,
   FOREIGN KEY (Continent) REFERENCES continents(Name),
   FOREIGN KEY (Country) REFERENCES countries(Name)

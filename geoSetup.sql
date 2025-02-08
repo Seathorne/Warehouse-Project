@@ -1,19 +1,24 @@
+/* 0. Drop old tables: */
+DROP TABLE IF EXISTS cities;
+DROP TABLE IF EXISTS countries;
+DROP TABLE IF EXISTS continents;
+
 /* 1. Table setup:  */
 CREATE TABLE continents (
-  Name TEXT(20) PRIMARY KEY
+  Name VARCHAR(20) PRIMARY KEY
 );
 
 CREATE TABLE countries (
-  Name Text(40) PRIMARY KEY,
-  Continent TEXT(20),
+  Name VARCHAR(40) PRIMARY KEY,
+  Continent VARCHAR(20),
   Population NUMERIC(10) NOT NULL DEFAULT 0,
   FOREIGN KEY (Continent) REFERENCES continents(Name)
 );
 
 CREATE TABLE cities (
-  Name TEXT(30) PRIMARY KEY,
-  Continent TEXT(20),
-  Country TEXT(40),
+  Name VARCHAR(30) PRIMARY KEY,
+  Continent VARCHAR(20),
+  Country VARCHAR(40),
   Population NUMERIC(10) NOT NULL DEFAULT 0,
   FOREIGN KEY (Continent) REFERENCES continents(Name),
   FOREIGN KEY (Country) REFERENCES countries(Name)
